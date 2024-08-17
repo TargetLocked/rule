@@ -2,25 +2,29 @@
 
 set -euo pipefail
 
-alias fetch="curl -fsSL"
+function fetch {
+    curl -fsSL "$@"
+}
 
-fetch_sing() {
+function fetch_sing {
     fetch "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-$1.srs" -o "$1.srs"
 }
 
-fetch_meta() {
+function fetch_meta {
     fetch "https://github.com/MetaCubeX/meta-rules-dat/blob/sing/geo/geosite/$1.json" -o "$1.json"
 }
 
-alias merge="python merge.py"
+function merge {
+    python merge.py "$@"
+}
 
-target() {
+function target {
     for arg in "$@"; do
         cp "$arg" target/
     done
 }
 
-do_block() {
+function do_block {
     # adg.json: AdGuard rules
     fetch https://github.com/AdguardTeam/AdGuardSDNSFilter/raw/gh-pages/Filters/filter.txt -o adg.txt
     sing-box rule-set convert --type adguard --output adg.srs adg.txt
