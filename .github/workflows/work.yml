@@ -39,7 +39,8 @@ jobs:
         run: |
           gh release download -R SagerNet/sing-box ${{ env.SB_RELEASE_TAG }} -p '*-linux-amd64.tar.gz' -O sb.tar.gz
           tar xf sb.tar.gz
-          mv "$(tar tf sb.tar.gz | grep 'sing-box$')" ./
+          mv "$(tar tf sb.tar.gz | grep '/sing-box$')" ./
+          sudo chmod a+x sing-box
 
       - name: generate rules
         run: bash main.bash

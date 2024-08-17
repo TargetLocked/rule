@@ -24,11 +24,15 @@ function target {
     done
 }
 
+function decompile {
+    ./sing-box rule-set decompile "$@"
+}
+
 function do_block {
     # adg.json: AdGuard rules
     fetch https://github.com/AdguardTeam/AdGuardSDNSFilter/raw/gh-pages/Filters/filter.txt -o adg.txt
-    sing-box rule-set convert --type adguard --output adg.srs adg.txt
-    sing-box rule-set decompile adg.srs
+    ./sing-box rule-set convert --type adguard --output adg.srs adg.txt
+    decompile adg.srs
     # category-ads-all.json: geosite
     fetch_meta category-ads-all
 
