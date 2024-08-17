@@ -1,0 +1,58 @@
+name: work
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SB_RELEASE_TAG: v1.10.0-alpha.29
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: setup unirule
+        run: pip install unirule
+
+      - name: cache sing-box
+        uses: actions/cache@v4
+        with:
+          path: sing-box
+          key: sing-box-${{ env.SB_RELEASE_TAG }}
+
+      - name: setup sing-box
+        run: |
+          gh release download -R SagerNet/sing-box ${{ env.SB_RELEASE_TAG }} -p '*-linux-amd64.tar.gz' -O sb.tar.gz
+          tar xf sb.tar.gz
+          mv "$(tar tf sb.tar.gz)sing-box" ./
+
+      - name: generate rules
+        run: bash main.bash
+
+      - name: release rules
+        run: |
+          cd target
+          git init
+          git config --local user.name "Actions"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c target
+          git add .
+          git commit -m "$(TZ=Asia/Shanghai date --rfc-3339)"
+          git remote add origin "https://nobody:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u origin target      
