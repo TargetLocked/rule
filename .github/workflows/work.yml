@@ -3,7 +3,6 @@ name: work
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
 
 defaults:
   run:
@@ -15,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SB_RELEASE_TAG: v1.10.0-alpha.29
+      SB_RELEASE_TAG: v1.10.0-beta.5
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: checkout

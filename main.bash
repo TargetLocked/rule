@@ -11,7 +11,7 @@ function fetch_sing {
 }
 
 function fetch_meta {
-    fetch "https://github.com/MetaCubeX/meta-rules-dat/blob/sing/geo/geosite/$1.json" -o "$1.json"
+    fetch "https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/$1.json" -o "$1.json"
 }
 
 function merge {
@@ -19,30 +19,35 @@ function merge {
 }
 
 function target {
+    targ_dir="target/$1"
+    shift 1
+    mkdir -p "$targ_dir"
     for arg in "$@"; do
-        cp "$arg" target/
+        cp -r "$arg" "$targ_dir"
     done
 }
 
-function decompile {
-    ./sing-box rule-set decompile "$@"
+function do_adgsdns {
+    # AdGuard rules
+    fetch https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -o adgsdns.txt
+    # -> adgsdns.srs
+    ./sing-box rule-set convert --type adguard adgsdns.txt
+    target box adgsdns.srs
+    # -> adgsdns.0.txt adgsdns.1.txt adgsdns.2.txt
+    # pin produced expression
+    unirule adgsdns.txt 'adgsdns.{}.txt' -i adguard-dns-multiout -o dlc | grep -F "((item_0 && !item_1) || item_2)"
+    target raw adgsdns.*.txt
 }
 
-function do_block {
-    # adg.json: AdGuard rules
-    fetch https://github.com/AdguardTeam/AdGuardSDNSFilter/raw/gh-pages/Filters/filter.txt -o adg.txt
-    ./sing-box rule-set convert --type adguard --output adg.srs adg.txt
-    decompile adg.srs
-    # category-ads-all.json: geosite
-    fetch_meta category-ads-all
-
-    # block.{json,txt}
-    merge adg.json category-ads-all.json >block.json
-    unirule block.json block.txt -i singbox -o dlc
-
-    target block.json block.txt
+function do_copy {
+    # -> category-ads-all.txt
+    fetch https://github.com/v2fly/domain-list-community/raw/master/data/category-ads-all -o category-ads-all.txt
+    target raw category-ads-all.txt
+    # -> ip-cn.txt
+    fetch https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/cn.list -o ip-cn.txt
+    target raw ip-cn.txt
 }
 
 # main
-mkdir "target"
-do_block
+do_adgsdns
+do_copy
