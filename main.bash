@@ -42,10 +42,16 @@ function do_adgsdns {
     target raw adgsdns.*.txt
 }
 
-function do_copy {
+function do_ads_all {
+    fetch https://github.com/v2fly/domain-list-community/raw/release/category-ads-all.txt -o dlc-ads-all.txt
+
     # -> category-ads-all.txt
-    fetch https://github.com/v2fly/domain-list-community/raw/master/data/category-ads-all -o category-ads-all.txt
+    # remove attributes
+    unirule dlc-ads-all.txt category-ads-all.txt -i dlc -o dlc
     target raw category-ads-all.txt
+}
+
+function do_copy {
     # -> ip-cn.txt
     fetch https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/cn.list -o ip-cn.txt
     target raw ip-cn.txt
@@ -53,4 +59,5 @@ function do_copy {
 
 # main
 do_adgsdns
+do_ads_all
 do_copy
