@@ -28,14 +28,17 @@ function target {
 }
 
 function do_adgsdns {
-    # AdGuard rules
     fetch https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -o adgsdns.txt
+
     # -> adgsdns.srs
     ./sing-box rule-set convert --type adguard adgsdns.txt
     target box adgsdns.srs
+
     # -> adgsdns.0.txt adgsdns.1.txt adgsdns.2.txt
+    TMP=$(mktemp) || exit 1
+    unirule adgsdns.txt 'adgsdns.{}.txt' -i adguard-dns-multiout -o dlc 2> >(tee -a "$TMP")
     # pin produced expression
-    unirule adgsdns.txt 'adgsdns.{}.txt' -i adguard-dns-multiout -o dlc 2> >(tee /dev/tty) | grep -F "((item_0 && !item_1) || item_2)"
+    grep -F "((item_0 && !item_1) || item_2)" "$TMP"
     target raw adgsdns.*.txt
 }
 
