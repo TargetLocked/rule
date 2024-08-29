@@ -35,10 +35,10 @@ function do_adgsdns {
     target box adgsdns.srs
 
     # -> adgsdns.0.txt adgsdns.1.txt adgsdns.2.txt
-    TMP=$(mktemp) || exit 1
+    TMP=$(mktemp)
     unirule adgsdns.txt 'adgsdns.{}.txt' -i adguard-dns-multiout -o dlc 2> >(tee -a "$TMP")
     # pin produced expression
-    grep -F "((item_0 && !item_1) || item_2)" "$TMP"
+    grep -F "((item_0 && !item_1) || item_2)" "$TMP" >/dev/null
     target raw adgsdns.*.txt
 }
 
