@@ -52,8 +52,9 @@ function do_ads_all {
 }
 
 function do_copy {
-    # -> ip-cn.txt
     fetch https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/cn.list -o ip-cn.txt
+
+    # -> ip-cn.txt
     target raw ip-cn.txt
 }
 
