@@ -31,7 +31,7 @@ function do_adgsdns {
     fetch https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -o adgsdns.txt
 
     # -> box/adgsdns.srs
-    ./sing-box rule-set convert --type adguard --output ./adgdns.srs adgsdns.txt
+    ./sing-box rule-set convert --type adguard --output ./adgsdns.srs adgsdns.txt
     target box adgsdns.srs
 
     # -> raw/adgsdns.0.txt raw/adgsdns.1.txt raw/adgsdns.2.txt
