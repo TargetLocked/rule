@@ -30,11 +30,11 @@ function target {
 function do_adgsdns {
     fetch https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -o adgsdns.txt
 
-    # -> adgsdns.srs
-    ./sing-box rule-set convert --type adguard adgsdns.txt
+    # -> box/adgsdns.srs
+    ./sing-box rule-set convert --type adguard --output ./adgdns.srs adgsdns.txt
     target box adgsdns.srs
 
-    # -> adgsdns.0.txt adgsdns.1.txt adgsdns.2.txt
+    # -> raw/adgsdns.0.txt raw/adgsdns.1.txt raw/adgsdns.2.txt
     TMP=$(mktemp)
     unirule adgsdns.txt 'adgsdns.{}.txt' -i adguard-dns-multiout -o dlc 2> >(tee -a "$TMP")
     # pin produced expression
@@ -45,20 +45,27 @@ function do_adgsdns {
 function do_ads_all {
     fetch https://github.com/v2fly/domain-list-community/raw/release/category-ads-all.txt -o dlc-ads-all.txt
 
-    # -> category-ads-all.txt
+    # -> raw/category-ads-all.txt
     # remove attributes
     unirule dlc-ads-all.txt category-ads-all.txt -i dlc -o dlc
     target raw category-ads-all.txt
 }
 
+function do_hbr {
+    # -> box/hbr.srs
+    ./sing-box rule-set compile --output ./hbr.srs target/box/hbr.json
+    target box hbr.srs
+}
+
 function do_copy {
     fetch https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/cn.list -o ip-cn.txt
 
-    # -> ip-cn.txt
+    # -> raw/ip-cn.txt
     target raw ip-cn.txt
 }
 
 # main
 do_adgsdns
 do_ads_all
+do_hbr
 do_copy
