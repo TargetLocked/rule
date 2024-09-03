@@ -27,7 +27,7 @@ function target {
     done
 }
 
-function do_adgsdns {
+function from_adgsdns {
     fetch https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt -o adgsdns.txt
 
     # -> box/adgsdns.srs
@@ -42,7 +42,7 @@ function do_adgsdns {
     target raw adgsdns.*.txt
 }
 
-function do_ads_all {
+function from_dlc {
     fetch https://github.com/v2fly/domain-list-community/raw/release/category-ads-all.txt -o dlc-ads-all.txt
 
     # -> raw/category-ads-all.txt
@@ -51,21 +51,36 @@ function do_ads_all {
     target raw category-ads-all.txt
 }
 
-function do_hbr {
+function from_custom {
     # -> box/hbr.srs
     ./sing-box rule-set compile --output ./hbr.srs target/box/hbr.json
     target box hbr.srs
 }
 
-function do_copy {
+function from_meta_ip {
     fetch https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/cn.list -o ip-cn.txt
 
     # -> raw/ip-cn.txt
     target raw ip-cn.txt
 }
 
+function from_sing {
+    fetch_sing geolocation-cn
+    fetch_sing geolocation-!cn
+
+    # -> raw/geolocation-cn.txt
+    ./sing-box rule-set decompile --output ./cn.json ./geolocation-cn.srs
+    unirule cn.json geolocation-cn.txt -i singbox -o dlc
+    target raw geolocation-cn.txt
+    # -> raw/geolocation-!cn.txt
+    ./sing-box rule-set decompile --output ./!cn.json ./geolocation-!cn.srs
+    unirule !cn.json geolocation-!cn.txt -i singbox -o dlc
+    target raw geolocation-!cn.txt
+}
+
 # main
-do_adgsdns
-do_ads_all
-do_hbr
-do_copy
+from_adgsdns
+from_dlc
+from_custom
+from_meta_ip
+from_sing
