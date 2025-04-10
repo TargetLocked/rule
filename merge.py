@@ -9,4 +9,4 @@ for path in sys.argv[1:]:
         with open(path, "r") as f:
             src = json.load(f)
         rules.extend(src["rules"])
-print(json.dumps({"version": 1, "rules": rules}))
+print(json.dumps({"version": 3, "rules": rules}))

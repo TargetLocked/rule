@@ -14,6 +14,10 @@ function fetch_meta {
     fetch "https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/$1.json" -o "$1.json"
 }
 
+function fetch_dlc {
+    fetch "https://github.com/v2fly/domain-list-community/raw/release/$1.txt" -o "dlc-$1.txt"
+}
+
 function merge {
     python merge.py "$@"
 }
@@ -43,12 +47,17 @@ function from_adgsdns {
 }
 
 function from_dlc {
-    fetch https://github.com/v2fly/domain-list-community/raw/release/category-ads-all.txt -o dlc-ads-all.txt
+    fetch_dlc category-ads
+    fetch_dlc tld-cn
 
-    # -> raw/category-ads-all.txt
+    # -> raw/category-ads.txt
     # remove attributes
-    unirule dlc-ads-all.txt category-ads-all.txt -i dlc -o dlc
-    target raw category-ads-all.txt
+    unirule dlc-category-ads.txt category-ads.txt -i dlc -o dlc
+    target raw category-ads.txt
+
+    # -> raw/tld-cn.txt
+    unirule dlc-tld-cn.txt tld-cn.txt -i dlc -o dlc
+    target raw tld-cn.txt
 }
 
 function from_custom {
