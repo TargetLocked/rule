@@ -10,6 +10,11 @@ function fetch_sing {
     fetch "https://github.com/SagerNet/sing-geosite/raw/rule-set/geosite-$1.srs" -o "$1.srs"
 }
 
+function decompile_sing {
+    ./sing-box rule-set decompile --output "./sing-$1.json" "./$1.srs"
+    unirule "sing-$1.json" "$1.txt" -i singbox -o dlc
+}
+
 function fetch_meta {
     fetch "https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/$1.json" -o "$1.json"
 }
@@ -47,13 +52,13 @@ function from_adgsdns {
 }
 
 function from_dlc {
-    fetch_dlc category-ads
+    fetch_dlc category-ads-all
     fetch_dlc tld-cn
 
-    # -> raw/category-ads.txt
+    # -> raw/category-ads-all.txt
     # remove attributes
-    unirule dlc-category-ads.txt category-ads.txt -i dlc -o dlc
-    target raw category-ads.txt
+    unirule dlc-category-ads-all.txt category-ads-all.txt -i dlc -o dlc
+    target raw category-ads-all.txt
 
     # -> raw/tld-cn.txt
     unirule dlc-tld-cn.txt tld-cn.txt -i dlc -o dlc
@@ -76,15 +81,17 @@ function from_meta_ip {
 function from_sing {
     fetch_sing geolocation-cn
     fetch_sing geolocation-!cn
+    fetch_sing category-ads
 
     # -> raw/geolocation-cn.txt
-    ./sing-box rule-set decompile --output ./cn.json ./geolocation-cn.srs
-    unirule cn.json geolocation-cn.txt -i singbox -o dlc
+    decompile_sing geolocation-cn
     target raw geolocation-cn.txt
     # -> raw/geolocation-!cn.txt
-    ./sing-box rule-set decompile --output ./!cn.json ./geolocation-!cn.srs
-    unirule !cn.json geolocation-!cn.txt -i singbox -o dlc
+    decompile_sing geolocation-!cn
     target raw geolocation-!cn.txt
+    # -> raw/category-ads.txt
+    decompile_sing category-ads
+    target raw category-ads.txt
 }
 
 # main
