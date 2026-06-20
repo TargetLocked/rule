@@ -94,9 +94,19 @@ function from_sing {
     target raw category-ads.txt
 }
 
+function from_loyal {
+    fetch https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt -o gfw.txt
+
+    # -> box/gfw.srs
+    unirule gfw.txt gfw.json -i dlc -o singbox
+    ./sing-box rule-set compile --output ./gfw.srs ./gfw.json
+    target box gfw.srs
+}
+
 # main
 from_adgsdns
 from_dlc
 from_custom
 from_meta_ip
 from_sing
+from_loyal
