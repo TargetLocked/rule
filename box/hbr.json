@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "rules": [
+        {
+            "domain": [
+                "gl-payment.gree-apps.net",
+                "heaven-burns-red-assets.akamaized.net",
+                "heaven-burns-red-assets-ap.akamaized.net"
+            ],
+            "domain_suffix": [
+                "heaven-burns-red.wfs.games"
+            ]
+        }
+    ]
+}
