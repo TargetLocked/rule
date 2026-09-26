@@ -1,0 +1,5 @@
+adsrvmedia.adk2.co
+bet.championat.com
+pixel.wp.pl
+regexp:^([^\.]+\.)*deloton\.com
+regexp:^([^\.]+\.)*oclasrv\.com
